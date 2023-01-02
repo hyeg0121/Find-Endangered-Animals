@@ -10,7 +10,8 @@ const int ROW = 4, COL = 4;
 const int C_WIDTH = 270, C_HEIGHT = 180;
 const int W_WIDTH = 1500, W_HEIGHT = 1000;
 
-struct Cards {
+struct Cards 
+{
 	RectangleShape sprite;
 	int id_i, id_j;
 	int type;
@@ -18,14 +19,24 @@ struct Cards {
 	int is_cleared;
 };
 
-struct SBuffer {
+struct SBuffer 
+{
 	SoundBuffer BGM;
 };
+
+void swap_card(struct Cards* c1, struct Cards* c2) 
+{
+	struct Cards temp = *c1;
+	*c1 = *c2;
+	*c2 = temp;
+}
 
 int main(void) 
 {
 	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "AfterSchool2");
 	window.setFramerateLimit(60);
+
+	srand(time(0));
 
 	Vector2i mouse_pos;
 	int flipped_num = 0;
@@ -72,6 +83,7 @@ int main(void)
 
 	char info[100];
 
+	/* Cards */
 	struct Cards compare_card; //첫 번째로 뒤집힌 카드 
 	struct Cards cards[ROW][COL];
 	int n = 0;
@@ -80,17 +92,31 @@ int main(void)
 		for (int j = 0; j < COL; j++) 
 		{
 			cards[i][j].sprite.setSize(Vector2f(C_WIDTH, C_HEIGHT));
-			cards[i][j].sprite.setPosition(j * C_WIDTH + 200, i * C_HEIGHT + 200);
 			cards[i][j].sprite.setTexture(&t[0]);
 			cards[i][j].is_clicked = 0;
 			cards[i][j].type = 1 + n / 2;
-			cards[i][j].id_i = i;
-			cards[i][j].id_j = j;
 			cards[i][j].is_cleared = 0;
 			n++;
 		}
 	}
 
+	//카드 100번 섞기
+	for (int i = 0; i < 100; i++)
+	{
+		swap_card(&(cards[rand() % ROW][rand() % COL]), &(cards[rand() % ROW][rand() % COL]));
+	}
+
+	//섞은 값으로 id와 위치 잡기
+	for (int i = 0; i < ROW; i++)
+	{
+		for (int j = 0; j < COL; j++)
+		{
+			cards[i][j].sprite.setPosition(j * C_WIDTH + 200, i * C_HEIGHT + 200);
+			cards[i][j].id_i = i;
+			cards[i][j].id_j = j;
+		}
+	}
+	
 	/* 프로그램 실행 중 */
 	while (window.isOpen())
 	{
@@ -185,9 +211,6 @@ int main(void)
 			}
 			flipped_num = 0;
 		}
-
-		sprintf(info, "(%4d, %4d), time : %d %d", mouse_pos.x, mouse_pos.y, (spent_time/1000), (delay_time/1000)); //좌표 확인
-		text.setString(info);
 
 		window.clear();
 		window.draw(background);
