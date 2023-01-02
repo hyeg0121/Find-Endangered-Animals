@@ -17,6 +17,10 @@ struct Cards {
 	int is_clicked;
 };
 
+struct SBuffer {
+	SoundBuffer BGM;
+};
+
 int main(void) {
 	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "AfterSchool2");
 	window.setFramerateLimit(60);
@@ -39,11 +43,19 @@ int main(void) {
 	t[7].loadFromFile("./resources/images/card_7.png");
 	t[8].loadFromFile("./resources/images/card_8.png");
 
+	struct SBuffer sb;
+	sb.BGM.loadFromFile("./resources/sounds/backgroundmusic.wav");
+
+	/* background image & music */
 	RectangleShape background;
 	Texture background_texture;
 	background.setSize(Vector2f(W_WIDTH, W_HEIGHT));
 	background_texture.loadFromFile("./resources/images/background.png");
 	background.setTexture(&background_texture);
+	Sound bgm;
+	bgm.setBuffer(sb.BGM);
+	bgm.setLoop(1);
+	bgm.play();
 
 	Font font;
 	font.loadFromFile("c:/Windows/Fonts/arial.ttf");
@@ -95,18 +107,18 @@ int main(void) {
 					for (int i = 0; i < ROW; i++) 
 					{
 						for (int j = 0; j < COL; j++) 
-						{
-							//마우스 위치가 cards[i][j]의 위치에 해당할 때
-							if (cards[i][j].sprite.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y)) 
+						{							
+							//뒤집혀 지지 않은 카드만 뒤집음
+							if (cards[i][j].is_clicked == 0 &&
+								flipped_num < 2)
 							{
-								//뒤집혀 지지 않은 카드만 뒤집음
-								if (cards[i][j].is_clicked == 0 &&
-									spent_time - delay_time > 1000)
-								{
-									cards[i][j].is_clicked = 1;
-									flipped_num++;
-									delay_time = spent_time;
-								}
+									//마우스 위치가 cards[i][j]의 위치에 해당할 때
+									if (cards[i][j].sprite.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y))
+									{
+										cards[i][j].is_clicked = 1;
+										flipped_num++;
+										delay_time = spent_time;
+									}
 							}
 						}
 					}
