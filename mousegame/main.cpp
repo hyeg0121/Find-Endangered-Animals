@@ -6,9 +6,9 @@
 
 using namespace sf;
 
-const int ROW = 4;
-const int COL = 4;
+const int ROW = 4, COL = 4;
 const int C_WIDTH = 270, C_HEIGHT = 180;
+const int W_WIDTH = 1500, W_HEIGHT = 1000;
 
 struct Cards {
 	RectangleShape sprite;
@@ -18,7 +18,7 @@ struct Cards {
 };
 
 int main(void) {
-	RenderWindow window(VideoMode(1500, 1000), "AfterSchool2");
+	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "AfterSchool2");
 	window.setFramerateLimit(60);
 
 	Vector2i mouse_pos;
@@ -38,6 +38,7 @@ int main(void) {
 
 	RectangleShape background;
 	Texture background_texture;
+	background.setSize(Vector2f(W_WIDTH, W_HEIGHT));
 	background_texture.loadFromFile("./resources/images/background.png");
 	background.setTexture(&background_texture);
 
@@ -128,7 +129,7 @@ int main(void) {
 			sprintf(info, "(%4d, %4d), click_cnt : %d", mouse_pos.x, mouse_pos.y, flipped_num); //ÁÂÇ¥ È®ÀÎ
 			text.setString(info);
 
-			window.clear(Color::White);
+			window.clear();
 			window.draw(background);
 			for (int i = 0; i < ROW; i++) 
 			{
