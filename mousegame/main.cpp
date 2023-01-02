@@ -12,16 +12,18 @@ const int W_WIDTH = 1500, W_HEIGHT = 1000;
 
 struct Cards {
 	RectangleShape sprite;
-	int id;
+	int id_i, id_j;
 	int type;
 	int is_clicked;
+	int is_cleared;
 };
 
 struct SBuffer {
 	SoundBuffer BGM;
 };
 
-int main(void) {
+int main(void) 
+{
 	RenderWindow window(VideoMode(W_WIDTH, W_HEIGHT), "AfterSchool2");
 	window.setFramerateLimit(60);
 
@@ -70,6 +72,7 @@ int main(void) {
 
 	char info[100];
 
+	struct Cards compare_card; //첫 번째로 뒤집힌 카드 
 	struct Cards cards[ROW][COL];
 	int n = 0;
 	for (int i = 0; i < ROW; i++) 
@@ -81,6 +84,9 @@ int main(void) {
 			cards[i][j].sprite.setTexture(&t[0]);
 			cards[i][j].is_clicked = 0;
 			cards[i][j].type = 1 + n / 2;
+			cards[i][j].id_i = i;
+			cards[i][j].id_j = j;
+			cards[i][j].is_cleared = 0;
 			n++;
 		}
 	}
@@ -102,41 +108,65 @@ int main(void) {
 				break;
 			//한 번 누르면 한 번만 적용
 			case Event::MouseButtonPressed:
-				if (event.mouseButton.button == Mouse::Left) 
+				if (event.mouseButton.button == Mouse::Left)
 				{
-					for (int i = 0; i < ROW; i++) 
+					for (int i = 0; i < ROW; i++)
 					{
-						for (int j = 0; j < COL; j++) 
-						{							
-							//뒤집혀 지지 않은 카드만 뒤집음
-							if (cards[i][j].is_clicked == 0 &&
-								flipped_num < 2)
+						for (int j = 0; j < COL; j++)
+						{
+							if (flipped_num < 2)
 							{
-									//마우스 위치가 cards[i][j]의 위치에 해당할 때
-									if (cards[i][j].sprite.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y))
+								// 마우스 위치가 cards[i][j]의 위치에 해당한다면?
+								if (cards[i][j].sprite.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y))
+								{
+									// 뒤집혀지지 않은 카드만 뒤집겠다.
+									if (cards[i][j].is_clicked == 0)
 									{
 										cards[i][j].is_clicked = 1;
 										flipped_num++;
-										delay_time = spent_time;
-									}
-							}
-						}
-					}
-				}
 
+										// 뒤집혀진 카드가 한 개라면
+										if (flipped_num == 1)
+										{
+											compare_card = cards[i][j];
+										}
+										// 두 개를 뒤집었다면
+										else if (flipped_num == 2)
+										{
+											// 두 카드가 같은 종류면
+											if (compare_card.type == cards[i][j].type)
+											{
+												cards[i][j].is_cleared = 1;
+												cards[compare_card.id_i][compare_card.id_j].is_cleared = 1;
+											}
+											// 두 카드가 다른 종류이면
+											else
+											{
+												delay_time = spent_time;
+											}
+										}//else if
+									}//if
+								}//if
+							}//if
+						}//for
+					}//for
+				}//if
 			}//switch
-		}//event
+		}//while
 
 		//클릭시 카드 뒤집기 
 		for (int i = 0; i < ROW; i++) 
 		{
 			for (int j = 0; j < COL; j++) 
 			{
-				if (cards[i][j].is_clicked)
+				//클릭이 된 상태이거나, 정답을 맞춘 카드이면
+				if (cards[i][j].is_clicked || cards[i][j].is_cleared)
 				{
+					//그림이 있는 상태로 변경
 					cards[i][j].sprite.setTexture(&t[cards[i][j].type]);
 				}
-				else {
+				else
+				{
 					cards[i][j].sprite.setTexture(&t[0]);
 				}
 			}
@@ -155,6 +185,7 @@ int main(void) {
 			}
 			flipped_num = 0;
 		}
+
 		sprintf(info, "(%4d, %4d), time : %d %d", mouse_pos.x, mouse_pos.y, (spent_time/1000), (delay_time/1000)); //좌표 확인
 		text.setString(info);
 
