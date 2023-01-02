@@ -110,21 +110,23 @@ int main(void) {
 					{
 						cards[i][j].sprite.setTexture(&t[cards[i][j].type]);
 					}
+					else {
+						cards[i][j].sprite.setTexture(&t[0]);
+					}
 				}
 			}
 
-			//뒤집힌 카드가 두개일 때 
-			if (flipped_num > 2) 
+			//뒤집힌 카드가 두개일 때 TODO : 두 번째 카드는 바로 다시 뒤집혀지지 않게 하기
+			if (flipped_num == 2) 
 			{
 				for (int i = 0; i < ROW; i++) 
 				{
 					for (int j = 0; j < COL; j++)
 					{
-						cards[i][j].sprite.setTexture(&t[0]); //카드를 원래 상태로 뒤집음
 						cards[i][j].is_clicked = 0;
-						flipped_num = 0;
 					}
 				}
+				flipped_num = 0;
 			}
 			sprintf(info, "(%4d, %4d), click_cnt : %d", mouse_pos.x, mouse_pos.y, flipped_num); //좌표 확인
 			text.setString(info);

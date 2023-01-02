@@ -24,6 +24,7 @@
     <ProjectGuid>{b65b4129-5612-411b-b137-034f4ec7b5e7}</ProjectGuid>
     <RootNamespace>mousegame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>find_endangered_animals</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
